@@ -48,7 +48,11 @@ const SignIn = () => {
               <h2>登入頁面</h2>
               <input placeholder='帳號' id='username'></input>
               <input placeholder='密碼' id='password' type='password'></input>
-              <button onClick={submit}>提交</button>          
+              <button onClick={submit}>提交</button>  
+              <div class="sign-in-with-google" onClick={()=>navigate('/api/login/google')}>
+                  <img src="https://i.postimg.cc/zGfschMd/google-photo.png" alt="google-photo"/>
+                  Sign In With Google
+              </div>      
             </>
           ) : (
             <Navigate to="/" />

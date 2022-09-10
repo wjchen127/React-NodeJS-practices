@@ -36,3 +36,34 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* SignIn Page */
+/* google SignIn button */
+
+.sign-in-with-google{
+  width: 225px;
+  /* height: 60px; */
+  background: #0779e4;
+  border-radius: 4px;
+  padding: 3px;
+  font-size: 15px;
+  color: white;
+  margin: 10px;
+  cursor: pointer;
+  outline: none;
+  transition: .5s ease-in-out;
+  -webkit-transition: .5s ease-in-out;
+  -moz-transition: .5s ease-in-out;
+  -ms-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+}
+.sign-in-with-google img{
+  width: 55px;
+  height: 100%;
+  vertical-align: middle;
+  margin-right: 10px;
+}
+.sign-in-with-google:hover{
+  box-shadow: 1px 10px 15px -10px #0779e4;
+}
