@@ -20,6 +20,9 @@
     "ioredis": "^5.2.3",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.4",
+    "mongoose-findorcreate": "^3.0.0",
+    "passport": "^0.6.0",
+    "passport-google-oauth20": "^2.0.0",
     "pug": "^3.0.2",
     "redis": "^4.3.1",
     "uuid": "^9.0.0"

@@ -4,6 +4,9 @@ const mongoose = require('mongoose')
 const bcrypt = require("bcrypt")
 const session = require('express-session')
 const cookieParser = require('cookie-parser')
+const passport = require('passport')
+let GoogleStrategy = require('passport-google-oauth20').Strategy
+let GoogleOauthSecret = require('./config/googleOAuth.json')
 const Redis = require('ioredis')
 const redisClient = new Redis()
 const RedisStore = require('connect-redis')(session)
@@ -32,11 +35,13 @@ app.use(session({
 	cookie: { maxAge: 600 * 1000 },
 	store: new RedisStore({client:redisClient})
 }))
+app.use(passport.initialize())
+app.use(passport.session())
 
 //帶入MongoDB的Model
 let Article = require('./models/article')
 let userDB = require('./models/user')
-const e = require('express')
+let userbyOauthDB = require('./models/userbyoauth')
 
 //建立MongoDB連線
 mongoose.connect('mongodb://localhost/app')
@@ -51,8 +56,44 @@ db.on('error', ()=>{
   console.log(err)
 })
 
+passport.use(new GoogleStrategy({
+  clientID: GoogleOauthSecret.web.client_id,
+  clientSecret: GoogleOauthSecret.web.client_secret,
+  callbackURL: "/oauth2/redirect/google",
+  scope: [ 'profile', 'email' ],
+  state: true
+}, async (accessToken, refreshToken, profile, done) => {
+  console.log(profile)
+  const newUser = {
+    uid: profile.id,
+    name: profile.displayName,
+    email: profile.emails[0].value
+  }
+  try {
+    //find the user in our database 
+    let user = await userbyOauthDB.findOne({ uid: profile.id })
 
+    if (user) {
+      //If user present in our database.
+      done(null, user)
+    } else {
+      // if user is not preset in our database save user data to database.
+      user = await userbyOauthDB.create(newUser)
+      done(null, user)
+    }
+  } catch (err) {
+      done(err)
+  }
+}))
+// used to serialize the user for the session
+passport.serializeUser((user, done) => {
+  done(null, user)
+})
 
+// used to deserialize the user
+passport.deserializeUser((id, done) => {
+  done(null, id)
+})
 
 app.post('/api/signin', (req, res, next) => {
   const {username, password} = req.body
@@ -99,13 +140,19 @@ app.post('/api/signup', checkPassWordValidation, (req, res, next) => {
   })
 })
 
+app.get('/api/login/google', passport.authenticate('google'))
+
+app.get('/oauth2/redirect/google',
+  passport.authenticate('google', { failureRedirect: 'http://localhost:3000/login', failureMessage: true, successRedirect:'http://localhost:3000/' }))
+
+
 app.use(Autherization)
 
 app.get('/api/checkIfLogined', (req, res) => {
   res.json({login:true})
 })
 app.get('/api/getMessage', (req, res) => {
-  
+  console.log(req.user)
   Article.find({}, (err, obj)=>{
     if(err){
       console.log(err)

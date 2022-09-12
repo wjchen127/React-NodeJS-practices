@@ -49,7 +49,7 @@ const SignIn = () => {
               <input placeholder='帳號' id='username'></input>
               <input placeholder='密碼' id='password' type='password'></input>
               <button onClick={submit}>提交</button>  
-              <div class="sign-in-with-google" onClick={()=>navigate('/api/login/google')}>
+              <div class="sign-in-with-google" onClick={()=>window.open('http://localhost:5001/api/login/google', '_self')}>
                   <img src="https://i.postimg.cc/zGfschMd/google-photo.png" alt="google-photo"/>
                   Sign In With Google
               </div>      
